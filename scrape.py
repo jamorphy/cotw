@@ -1,14 +1,15 @@
 import os
-from dotenv import load_dotenv
-import autogen
-from autogen import ConversableAgent
-from twitch import get_top_clips
-from collect_and_summarize import summarize
 import re
 import yaml
 import argparse
+from autogen import ConversableAgent
+from dotenv import load_dotenv
+import autogen
 
-from util import get_working_folder, generate_unique_id
+from twitch import get_top_clips
+from collect_and_summarize import summarize
+
+from util import get_working_folder, generate_unique_id, get_game_info
 from agents import clip_scraper, clip_summarizer
 
 load_dotenv()
@@ -18,14 +19,14 @@ available_functions = {
     "summarize": summarize
 }
 
-joe_config = {
+single_turn_config = {
     "config_list": [{"model": "gpt-4o-mini", "api_key": os.environ["OPENAI_API_KEY"], "api_type": "openai"}]
 }
 
 single_turn = ConversableAgent(
     "singleturn",
     system_message="You make agents terminate when they complete their task.",
-    llm_config=joe_config,
+    llm_config=single_turn_config,
     human_input_mode="NEVER",
     function_map=available_functions
 )
@@ -40,28 +41,18 @@ user_proxy = autogen.UserProxyAgent(
 
 if __name__ == "__main__":
 
-    os.chdir("/Users/j/Workspace")
-
     parser = argparse.ArgumentParser()
     parser.add_argument("game_name", help="Name of game to scrape")
     args = parser.parse_args()
 
-    with open("videogen/categories.yaml", "r") as f:
-        games = yaml.safe_load(f)["games"]
+    with open("metadata.yaml", "r") as f:
+        games = yaml.safe_load(f)["games"]    
 
-    def get_game_info(game_name):
-        game_info = games.get(game_name)
-        if game_info:
-            return game_info["id"], game_info["display"]
-        else:
-            print('game does not exist')
-            exit(1)
-
-    game_id, game_display = get_game_info(args.game_name)
+    game_id, game_display = get_game_info(games, args.game_name)
 
     working_folder = get_working_folder(args.game_name)
     if working_folder:
-        print('video folder exists, continuing with existing video')
+        print(f'Active folder exists: {working_folder}')
     else:
         folder_name = f'{args.game_name}-{generate_unique_id()}'        
         try:

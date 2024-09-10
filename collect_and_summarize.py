@@ -1,47 +1,64 @@
 ###
 ### collection.py
 ###
-### Collects and summarizes data
+### Collects and summarizes data from scraper
 
 import os
 import io
-from pathlib import Path
 from openai import OpenAI
-import anthropic
+from anthropic import Anthropic
 import base64
-
+import json
 import cv2
 from PIL import Image
 
 def summarize(work_dir):
-    clips_dir = Path(work_dir, "clips")
+    clips_dir = os.path.join(work_dir, "clips")
 
     oai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-    anthropic_client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    anthropic_client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    metadata_file = os.path.join(work_dir, "clips_metadata.json")
 
-    for folder in clips_dir.iterdir():
-        if folder.is_dir():
-            transcription = ""
-            frames = []            
-            for file in folder.iterdir():
-                if file.suffix == ".mp3":
-                    transcription = transcribe_audio(oai_client, str(folder), file.name)
-
-                if file.suffix == ".mp4":
-                    frames = extract_frames(str(folder), file.name)
-
-            if transcription != None and frames != None:
-                summary = get_summary(anthropic_client, transcription, frames)
-
-                summary_file = os.path.join(folder, "summary.txt")
-                with open(summary_file, "w", encoding="utf-8") as f:
-                    f.write(str(summary))
+    with open(metadata_file, "r") as f:
+        metadata = json.load(f)
     
+    updated_clips = []
+    for clip in metadata:
+        transcription = transcribe_audio(oai_client, clip['audio_path'])
+        clip['transcription'] = transcription
+        frames = extract_frames(clip['video_path'])
 
-    return "Finished summarizing all clips."
+        if transcription and frames:
+            summary = get_summary(anthropic_client, transcription, frames)
+            clip['summary'] = str(summary)
 
-def extract_frames(folder_path, filename, num_frames=8, compression_quality=40):
-    file_path = os.path.join(folder_path, filename)
+        updated_clips.append(clip)
+    
+    with open(os.path.join(work_dir, 'clips_metadata.json'), 'w') as f:
+        json.dump(updated_clips, f, indent=2)
+
+    return f"Finished summarizing {len(updated_clips)} clips."
+
+    # for folder in clips_dir.iterdir():
+    #     if folder.is_dir():
+    #         transcription = ""
+    #         frames = []            
+    #         for file in folder.iterdir():
+    #             if file.suffix == ".mp3":
+    #                 transcription = transcribe_audio(oai_client, str(folder), file.name)
+
+    #             if file.suffix == ".mp4":
+    #                 frames = extract_frames(str(folder), file.name)
+
+    #         if transcription != None and frames != None:
+    #             summary = get_summary(anthropic_client, transcription, frames)
+
+    #             summary_file = os.path.join(folder, "summary.txt")
+    #             with open(summary_file, "w", encoding="utf-8") as f:
+    #                 f.write(str(summary))
+
+
+def extract_frames(file_path, num_frames=8, compression_quality=40):
     print(f'Currently extracting frames from {file_path}')
 
     try:
@@ -83,20 +100,16 @@ def extract_frames(folder_path, filename, num_frames=8, compression_quality=40):
         print(f"An error occurred: {str(e)}")
         return None
 
-def transcribe_audio(client, folder_path, filename):
-    file_path = os.path.join(folder_path, filename)
-    print(f'Currently transcribing {file_path}')
+def transcribe_audio(client, file_path):
+    print(f'Now transcribing: {file_path}')
     try:
         with open(file_path, "rb") as mp3:
             transcription = client.audio.transcriptions.create(
                 model="whisper-1", 
                 file=mp3
             )
-            transcription_file_path = os.path.join(folder_path, "transcription.txt")
-            with open(transcription_file_path, "w", encoding="utf-8") as f:
-                transcribed_audio = transcription.text
-                f.write(transcribed_audio)
-                return transcribed_audio
+        if transcription:
+            return transcription.text
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return None
@@ -133,6 +146,7 @@ def get_summary(client, transcription, compressed_frames):
                   Describe what you see in the clip.
                   
                   Make sure to note if there are any standout moments in the clip that are 'clip worthy'.
+                  RETURN YOUR RESPONSE IN PLAIN TEXT ONLY.
                   """,
         messages=[
             {
@@ -142,4 +156,4 @@ def get_summary(client, transcription, compressed_frames):
         ],
     )
 
-    return message.content
+    return message.content[0].text

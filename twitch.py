@@ -42,26 +42,46 @@ def get_top_clips(game_id, work_dir, limit=30):
     if response.status_code == 200:
         clips = response.json()["data"]
         en_clips = [clip for clip in clips if clip['language'] == 'en']
-        save_clips_metadata(en_clips)
-        download_clips(work_dir )
-        return "Finished retrieving top clips."
+        save_clips_metadata(work_dir, en_clips)
+        download_clips(work_dir)
+        return f"Successfully retrieved {len(en_clips)} clips."
     else:
         print(f"Error: {response.status_code}")
         print(response.text)
         return None
 
-def save_clips_metadata(clips, filename='clips_metadata.json', min_views=500):
+def save_clips_metadata(work_dir, clips, min_views=800):
     filtered_clips = [clip for clip in clips if clip['view_count'] > min_views]
     for clip in filtered_clips:
         if isinstance(clip['created_at'], datetime):
             clip['created_at'] = clip['created_at'].isoformat()
+        clip['is_analyzed'] = False
 
-    with open(filename, 'w') as f:
+        if "embed_url" in clip:
+            del clip["embed_url"]
+        if "broadcaster_id" in clip:
+            del clip["broadcaster_id"]
+        if "creator_id" in clip:
+            del clip["creator_id"]
+        if "creator_name" in clip:
+            del clip["creator_name"]
+        if "video_id" in clip:
+            del clip["video_id"]
+        if "vod_offset" in clip:
+            del clip["vod_offset"]
+        if "is_featured" in clip:
+            del clip["is_featured"]
+
+    metadata_path = os.path.join(work_dir, 'clips_metadata.json')
+    with open(metadata_path, 'w') as f:
         json.dump(filtered_clips, f, indent=2)
-    print(f"Metadata saved to {filename}")
+
+
+
+    print(f"Metadata saved to {metadata_path}")
 
 def download_clips(work_dir):
-    with open('clips_metadata.json', 'r') as f:
+    with open(os.path.join(work_dir, 'clips_metadata.json'), 'r') as f:
         clips_metadata = json.load(f)
 
     def download_clip(clip):
@@ -69,8 +89,8 @@ def download_clips(work_dir):
         clip_url = clip['url']
         clip_dir = os.path.join(work_dir, 'clips', clip_id)
         os.makedirs(clip_dir, exist_ok=True)
-        video_output_template = os.path.join(clip_dir, f"{clip_id}.%(ext)s")
-        audio_output_template = os.path.join(clip_dir, f"{clip_id}.mp3")
+        video_output_template = os.path.join(clip_dir, f"{clip_id}_video.%(ext)s")
+        audio_output_template = os.path.join(clip_dir, f"{clip_id}_audio")
 
         video_ydl_opts = {
             'outtmpl': video_output_template,
@@ -92,22 +112,29 @@ def download_clips(work_dir):
 
         try:
             with yt_dlp.YoutubeDL(video_ydl_opts) as ydl:
-                ydl.download([clip_url])
+                video_info = ydl.extract_info(clip_url, download=True)
 
             with yt_dlp.YoutubeDL(audio_ydl_opts) as ydl:
-                ydl.download([clip_url])
+                audio_info = ydl.extract_info(clip_url, download=True)
 
-            return video_output_template, audio_output_template
+            clip['video_path'] = os.path.join(clip_dir, f"{clip_id}_video.mp4")
+            clip['audio_path'] = os.path.join(clip_dir, f"{clip_id}_audio.mp3")
+            return clip
         except Exception as e:
             print(f"Error downloading clip {clip['id']}: {str(e)}")
-            return None, None
+            return None
 
     with ThreadPoolExecutor(max_workers=5) as executor:
         futures = [executor.submit(download_clip, clip) for clip in clips_metadata]
 
+        updated_clips = []
         with tqdm(total=len(futures), desc="Downloading clips") as pbar:
             for future in as_completed(futures):
-                video_path, audio_path = future.result()
-                if video_path and audio_path:
-                    pbar.set_postfix(video=video_path, audio=audio_path)
+                updated_clip = future.result()
+                if updated_clip:
+                    updated_clips.append(updated_clip)
+                    pbar.set_postfix(video=updated_clip['video_path'], audio=updated_clip['audio_path'])
                 pbar.update(1)
+
+    with open(os.path.join(work_dir, 'clips_metadata.json'), 'w') as f:
+        json.dump(updated_clips, f, indent=2)

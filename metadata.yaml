@@ -1,0 +1,34 @@
+games:
+  fortnite:
+    id: "33214"
+    display: "Fortnite"
+  minecraft:
+    id: "27471"
+    display: "Minecraft"
+  league_of_legends:
+    id: "21779"
+    display: "League of Legends"
+  valorant:
+    id: "516575"
+    display: "VALORANT"
+  cs2:
+    id: "32399"
+    display: "Counter-Strike 2"
+  deadlock:
+    id: "2132205352"
+    display: "Deadlock"
+  gtav:
+    id: "32982"
+    display: "Grand Theft Auto V"
+  black_myth_wukong:
+    id: "519291"
+    display: "Black Myth Wukong"
+  dota2:
+    id: "29595"
+    display: "Dota 2"
+  warzone:
+    id: "512710"
+    display: "Call of Duty: Warzone"
+  elden_ring:
+    id: "512953"
+    display: "Elden Ring"
