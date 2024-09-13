@@ -13,50 +13,40 @@ import cv2
 from PIL import Image
 
 def summarize(work_dir):
-    clips_dir = os.path.join(work_dir, "clips")
+    metadata_path = os.path.join(work_dir, 'clips_metadata.json')
 
     oai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
     anthropic_client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-    metadata_file = os.path.join(work_dir, "clips_metadata.json")
 
-    with open(metadata_file, "r") as f:
+    with open(metadata_path, "r") as f:
         metadata = json.load(f)
+
+    # TODO fix this
+    older_clips = [clip for clip in metadata if clip['is_analyzed'] == True]
+    newer_clips = [clip for clip in metadata if clip['is_analyzed'] == False]
+
+    print(f"There are {len(older_clips)} older clips and {len(newer_clips)} newer clips to summarize.")
     
     updated_clips = []
-    for clip in metadata:
-        transcription = transcribe_audio(oai_client, clip['audio_path'])
-        clip['transcription'] = transcription
-        frames = extract_frames(clip['video_path'])
+    for clip in newer_clips:
+        # TODO: Uncomment
+        #transcription = transcribe_audio(oai_client, clip['audio_path'])
+        clip['transcription'] = "dump dummy transcription"        
+        frames = ["frame1", "frame2", "frame3"]
+        #frames = extract_frames(clip['video_path'])
 
-        if transcription and frames:
-            summary = get_summary(anthropic_client, transcription, frames)
-            clip['summary'] = str(summary)
+        if clip['transcription'] and frames:
+            #summary = get_summary(anthropic_client, transcription, frames)
+            clip['summary'] = "dump dummy summary"
 
         updated_clips.append(clip)
+
+    final_clips = older_clips + updated_clips
     
     with open(os.path.join(work_dir, 'clips_metadata.json'), 'w') as f:
-        json.dump(updated_clips, f, indent=2)
+        json.dump(final_clips, f, indent=2)
 
     return f"Finished summarizing {len(updated_clips)} clips."
-
-    # for folder in clips_dir.iterdir():
-    #     if folder.is_dir():
-    #         transcription = ""
-    #         frames = []            
-    #         for file in folder.iterdir():
-    #             if file.suffix == ".mp3":
-    #                 transcription = transcribe_audio(oai_client, str(folder), file.name)
-
-    #             if file.suffix == ".mp4":
-    #                 frames = extract_frames(str(folder), file.name)
-
-    #         if transcription != None and frames != None:
-    #             summary = get_summary(anthropic_client, transcription, frames)
-
-    #             summary_file = os.path.join(folder, "summary.txt")
-    #             with open(summary_file, "w", encoding="utf-8") as f:
-    #                 f.write(str(summary))
-
 
 def extract_frames(file_path, num_frames=8, compression_quality=40):
     print(f'Currently extracting frames from {file_path}')

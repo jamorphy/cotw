@@ -19,7 +19,7 @@ def get_oauth_token():
     auth_response = requests.post(auth_url, params=auth_params)
     return auth_response.json()["access_token"]
 
-def get_top_clips(game_id, work_dir, limit=30):
+def get_top_clips(game_id, work_dir, limit=2):
     access_token = get_oauth_token()
     
     headers = {
@@ -32,29 +32,42 @@ def get_top_clips(game_id, work_dir, limit=30):
     clips_url = "https://api.twitch.tv/helix/clips"
     params = {
         "game_id": game_id,
-        "first": 65,
+        "first": limit,
         "started_at": one_day_ago,
-        "language": "en"
+        "language": "en",
     }
     
     response = requests.get(clips_url, headers=headers, params=params)
     
     if response.status_code == 200:
         clips = response.json()["data"]
+        # TODO: We are gathering clips from all languages for testing purposes
         en_clips = [clip for clip in clips if clip['language'] == 'en']
-        save_clips_metadata(work_dir, en_clips)
-        download_clips(work_dir)
-        return f"Successfully retrieved {len(en_clips)} clips."
+        save_clips_metadata(work_dir, clips)
+        # TODO: Uncomment to download clips
+        download_all_clips(work_dir)
+        return f"Retrieved {len(clips)} clips from the Twitch API."
     else:
-        print(f"Error: {response.status_code}")
-        print(response.text)
+        print(f"Error {response.status_code} fetching from Twitch API: {response.text}")
         return None
 
+# TODO: View count from metadata.yml is not being passed in here
 def save_clips_metadata(work_dir, clips, min_views=800):
-    filtered_clips = [clip for clip in clips if clip['view_count'] > min_views]
+    metadata_path = os.path.join(work_dir, 'clips_metadata.json')
+    
+    existing_clips = []
+    if os.path.exists(metadata_path):
+        with open(metadata_path, 'r') as f:
+            existing_clips = json.load(f)
+
+    print(f"There are {len(existing_clips)} existing clips.")
+    
+    filtered_clips = [clip for clip in clips if clip['view_count'] > 0]
+
     for clip in filtered_clips:
         if isinstance(clip['created_at'], datetime):
             clip['created_at'] = clip['created_at'].isoformat()
+
         clip['is_analyzed'] = False
 
         if "embed_url" in clip:
@@ -72,60 +85,76 @@ def save_clips_metadata(work_dir, clips, min_views=800):
         if "is_featured" in clip:
             del clip["is_featured"]
 
-    metadata_path = os.path.join(work_dir, 'clips_metadata.json')
+    all_clips = existing_clips + filtered_clips
+
+    print(f"About to save, there are {len(all_clips)} total clips.")
+
     with open(metadata_path, 'w') as f:
-        json.dump(filtered_clips, f, indent=2)
-
-
+        json.dump(all_clips, f, indent=2)
 
     print(f"Metadata saved to {metadata_path}")
 
-def download_clips(work_dir):
-    with open(os.path.join(work_dir, 'clips_metadata.json'), 'r') as f:
-        clips_metadata = json.load(f)
+def download_clip(work_dir, clip):
+    clip_id = clip['id']
+    clip_url = clip['url']
+    clip_dir = os.path.join(work_dir, 'clips', clip_id)
+    os.makedirs(clip_dir, exist_ok=True)
+    video_output_template = os.path.join(clip_dir, f"{clip_id}_video.%(ext)s")
+    audio_output_template = os.path.join(clip_dir, f"{clip_id}_audio")
 
-    def download_clip(clip):
-        clip_id = clip['id']
-        clip_url = clip['url']
-        clip_dir = os.path.join(work_dir, 'clips', clip_id)
-        os.makedirs(clip_dir, exist_ok=True)
-        video_output_template = os.path.join(clip_dir, f"{clip_id}_video.%(ext)s")
-        audio_output_template = os.path.join(clip_dir, f"{clip_id}_audio")
+    ffmpeg_location = "/opt/homebrew/bin/ffmpeg"
 
-        video_ydl_opts = {
-            'outtmpl': video_output_template,
-            'quiet': True,
-            'no_warnings': True,
-        }
+    video_ydl_opts = {
+        'outtmpl': video_output_template,
+        'quiet': True,
+        'no_warnings': True,
+        'ffmpeg_location': ffmpeg_location
+    }
 
-        audio_ydl_opts = {
-            'outtmpl': audio_output_template,
-            'quiet': True,
-            'no_warnings': True,
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-        }
+    audio_ydl_opts = {
+        'outtmpl': audio_output_template,
+        'quiet': True,
+        'no_warnings': True,
+        'format': 'bestaudio/best',
+        'ffmpeg_location': ffmpeg_location,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+    }
 
-        try:
-            with yt_dlp.YoutubeDL(video_ydl_opts) as ydl:
-                video_info = ydl.extract_info(clip_url, download=True)
+    try:
+        with yt_dlp.YoutubeDL(video_ydl_opts) as ydl:
+            video_info = ydl.extract_info(clip_url, download=True)
 
-            with yt_dlp.YoutubeDL(audio_ydl_opts) as ydl:
-                audio_info = ydl.extract_info(clip_url, download=True)
+        with yt_dlp.YoutubeDL(audio_ydl_opts) as ydl:
+            audio_info = ydl.extract_info(clip_url, download=True)
 
-            clip['video_path'] = os.path.join(clip_dir, f"{clip_id}_video.mp4")
-            clip['audio_path'] = os.path.join(clip_dir, f"{clip_id}_audio.mp3")
-            return clip
-        except Exception as e:
-            print(f"Error downloading clip {clip['id']}: {str(e)}")
-            return None
+        clip['video_path'] = os.path.join(clip_dir, f"{clip_id}_video.mp4")
+        clip['audio_path'] = os.path.join(clip_dir, f"{clip_id}_audio.mp3")
+        return clip
+    except Exception as e:
+        print(f"Error downloading clip {clip['id']}: {str(e)}")
+        return None    
+
+def download_all_clips(work_dir):
+    metadata_path = os.path.join(work_dir, 'clips_metadata.json')
+    with open(metadata_path, 'r') as f:
+        metadata = json.load(f)
+
+    analyzed_clips = [
+        clip for clip in metadata if clip['is_analyzed']
+    ]
+    clips_to_download = [
+        clip for clip in metadata
+        if not clip['is_analyzed']
+        and 'video_path' not in clip
+        and 'audio_path' not in clip
+    ]
 
     with ThreadPoolExecutor(max_workers=5) as executor:
-        futures = [executor.submit(download_clip, clip) for clip in clips_metadata]
+        futures = [executor.submit(lambda clip=clip: download_clip(work_dir, clip), clip) for clip in clips_to_download]
 
         updated_clips = []
         with tqdm(total=len(futures), desc="Downloading clips") as pbar:
@@ -136,5 +165,13 @@ def download_clips(work_dir):
                     pbar.set_postfix(video=updated_clip['video_path'], audio=updated_clip['audio_path'])
                 pbar.update(1)
 
-    with open(os.path.join(work_dir, 'clips_metadata.json'), 'w') as f:
-        json.dump(updated_clips, f, indent=2)
+    # for clip in updated_clips:
+    #     for i, clip in enumerate(metadata):
+    #         if clip['id'] == lip['id']:
+    #             metadata[i] = updated_clip
+    #             break
+
+    final_clips = analyzed_clips + updated_clips
+
+    with open(metadata_path, 'w') as f:
+        json.dump(final_clips, f, indent=2)

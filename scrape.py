@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import autogen
 
 from twitch import get_top_clips
-from collect_and_summarize import summarize
+from summarize import summarize
 
 from util import get_working_folder, generate_unique_id, get_game_info
 from agents import clip_scraper, clip_summarizer
