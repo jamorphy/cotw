@@ -55,4 +55,8 @@ games:
     display: "Elden Ring"
     min_views: 800
     min_runtime: 300
-    
+  tf2:
+    id: "16676"
+    display: "Team Fortress 2"
+    min_views: 100
+    min_runtime: 300
