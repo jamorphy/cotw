@@ -5,6 +5,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 import yt_dlp
+import yaml
 
 CLIENT_ID = "zc6zd5ktlm94jg0hq7a59fg8cvfsb8"
 CLIENT_SECRET = "k7ugx8ab7hhgx8h864c0w1hokpmkpv"
@@ -101,8 +102,10 @@ def download_clip(work_dir, clip):
     video_output_template = os.path.join(clip_dir, f"{clip_id}_video.%(ext)s")
     audio_output_template = os.path.join(clip_dir, f"{clip_id}_audio")
 
-    # TODO: Add location to a cfg file
-    ffmpeg_location = "/opt/homebrew/bin/ffmpeg"
+    with open('metadata.yaml', 'r') as f:
+        metadata = yaml.safe_load(f)
+
+    ffmpeg_location = metadata['ffmpeg_path']
 
     video_ydl_opts = {
         'outtmpl': video_output_template,

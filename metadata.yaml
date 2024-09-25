@@ -1,3 +1,4 @@
+ffmpeg_path: "/opt/homebrew/bin/ffmpeg"
 games:
   fortnite:
     id: "33214"
