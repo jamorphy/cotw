@@ -19,7 +19,7 @@ def get_oauth_token():
     auth_response = requests.post(auth_url, params=auth_params)
     return auth_response.json()["access_token"]
 
-def get_top_clips(game_id, work_dir, limit=2):
+def get_top_clips(game_id, work_dir, min_views, limit=8):
     access_token = get_oauth_token()
     
     headers = {
@@ -43,8 +43,7 @@ def get_top_clips(game_id, work_dir, limit=2):
         clips = response.json()["data"]
         # TODO: We are gathering clips from all languages for testing purposes
         en_clips = [clip for clip in clips if clip['language'] == 'en']
-        save_clips_metadata(work_dir, clips)
-        # TODO: Uncomment to download clips
+        save_clips_metadata(work_dir, clips, min_views)
         download_all_clips(work_dir)
         return f"Retrieved {len(clips)} clips from the Twitch API."
     else:
@@ -102,6 +101,7 @@ def download_clip(work_dir, clip):
     video_output_template = os.path.join(clip_dir, f"{clip_id}_video.%(ext)s")
     audio_output_template = os.path.join(clip_dir, f"{clip_id}_audio")
 
+    # TODO: Add location to a cfg file
     ffmpeg_location = "/opt/homebrew/bin/ffmpeg"
 
     video_ydl_opts = {
@@ -146,30 +146,27 @@ def download_all_clips(work_dir):
     analyzed_clips = [
         clip for clip in metadata if clip['is_analyzed']
     ]
+
     clips_to_download = [
         clip for clip in metadata
-        if not clip['is_analyzed']
-        and 'video_path' not in clip
-        and 'audio_path' not in clip
+        if 'video_path' not in clip
+        or 'audio_path' not in clip
     ]
 
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        futures = [executor.submit(lambda clip=clip: download_clip(work_dir, clip), clip) for clip in clips_to_download]
+    print(f'there are {len(clips_to_download)} clips to download')
 
-        updated_clips = []
-        with tqdm(total=len(futures), desc="Downloading clips") as pbar:
-            for future in as_completed(futures):
-                updated_clip = future.result()
-                if updated_clip:
-                    updated_clips.append(updated_clip)
-                    pbar.set_postfix(video=updated_clip['video_path'], audio=updated_clip['audio_path'])
-                pbar.update(1)
+    if len(clips_to_download) > 0:
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            futures = [executor.submit(lambda clip=clip: download_clip(work_dir, clip), clip) for clip in clips_to_download]
 
-    # for clip in updated_clips:
-    #     for i, clip in enumerate(metadata):
-    #         if clip['id'] == lip['id']:
-    #             metadata[i] = updated_clip
-    #             break
+            updated_clips = []
+            with tqdm(total=len(futures), desc="Downloading clips") as pbar:
+                for future in as_completed(futures):
+                    updated_clip = future.result()
+                    if updated_clip:
+                        updated_clips.append(updated_clip)
+                        pbar.set_postfix(video=updated_clip['video_path'], audio=updated_clip['audio_path'])
+                    pbar.update(1)
 
     final_clips = analyzed_clips + updated_clips
 

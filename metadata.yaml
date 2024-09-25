@@ -2,8 +2,8 @@ games:
   fortnite:
     id: "33214"
     display: "Fortnite"
-    min_views: 5
-    min_runtime: 20
+    min_views: 100
+    min_runtime: 60
   minecraft:
     id: "27471"
     display: "Minecraft"
@@ -23,7 +23,7 @@ games:
     id: "32399"
     display: "Counter-Strike 2"
     min_views: 0
-    min_runtime: 300    
+    min_runtime: 200    
   deadlock:
     id: "2132205352"
     display: "Deadlock"

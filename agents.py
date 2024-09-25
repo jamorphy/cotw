@@ -15,6 +15,7 @@ scraper_config = {
                 "properties": {
                     "game_id": {"type": "string", "description": "The Twitch game ID"},
                     "work_dir": {"type": "string", "description": "The working directory where all clips and metadata is saved."},
+                    "min_views": {"type": "string", "description": "The minimum number of views a clip should have."},
                     "limit": {"type": "string", "description": "Max nubmer of clips to get, default '10'"}                    
                 }                
             },                    

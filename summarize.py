@@ -31,13 +31,13 @@ def summarize(work_dir):
     for clip in newer_clips:
         # TODO: Uncomment
         #transcription = transcribe_audio(oai_client, clip['audio_path'])
-        clip['transcription'] = "dump dummy transcription"        
+        clip['transcription'] = "This is a dummy transcription."
         frames = ["frame1", "frame2", "frame3"]
         #frames = extract_frames(clip['video_path'])
 
         if clip['transcription'] and frames:
             #summary = get_summary(anthropic_client, transcription, frames)
-            clip['summary'] = "dump dummy summary"
+            clip['summary'] = "This is a testing summary, give this clip a 5/10."
 
         updated_clips.append(clip)
 

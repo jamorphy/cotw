@@ -15,7 +15,7 @@ def get_working_folder(game_name):
 def get_game_info(metadata, game_name):
     game_info = metadata.get(game_name)
     if game_info:
-        return game_info["id"], game_info["display"], 
+        return game_info["id"], game_info["display"], game_info["min_views"]
     else:
             print(f'Game \'{game_name}\' does not exist in metadata.yaml')
             exit(1)

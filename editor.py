@@ -17,6 +17,8 @@ from moviepy.video.fx.all import resize
 from moviepy.config import change_settings
 from tqdm import tqdm
 
+from send_discord_message import send_video_complete_message
+
 # Checks clips_metadata.json if there are enough clips to create a video
 def check_total_runtime(work_dir, target_runtime):
     metadata_path = os.path.join(work_dir, "clips_metadata.json")
@@ -50,18 +52,20 @@ def compile_video(work_dir):
         final_clips.append(video)
 
     print("Concatenating clips...")
-    compiled_video = concatenate_videoclips(final_clips)
+    #compiled_video = concatenate_videoclips(final_clips)
     output_dir = os.path.join(work_dir, 'output')
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, 'compilation.mp4')
 
     print(f"Rendering final video to {output_path}...")
-    compiled_video.write_videofile(output_path, codec='libx264', audio_codec='aac')
+    #compiled_video.write_videofile(output_path, codec='libx264', audio_codec='aac')
 
     # Cleanup
-    compiled_video.close()
+    #compiled_video.close()
     for clip in final_clips:
         clip.close()
+
+    send_video_complete_message(output_path)
     
     print(f"Compilation complete!")
     return output_path
@@ -87,7 +91,7 @@ single_turn = ConversableAgent(
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("game_name", help="Name of game to analyze")
+    parser.add_argument("game_name", help="Name of game to edit")
     args = parser.parse_args()
 
     with open("metadata.yaml", "r") as f:
@@ -97,9 +101,9 @@ if __name__ == "__main__":
 
     working_folder = get_working_folder(args.game_name)
     if working_folder:
-        print(f'Active folder exists: {working_folder}, starting analysis.')
+        print(f'Active folder exists: {working_folder}, starting edit loop.')
     else:
-        print(f'No active folder exists for \'{args.game_name}\', terminating analysis.')
+        print(f'No active folder exists for \'{args.game_name}\', terminating edit loop.')
         exit(1)    
     
     single_turn.initiate_chat(

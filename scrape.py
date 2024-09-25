@@ -48,7 +48,7 @@ if __name__ == "__main__":
     with open("metadata.yaml", "r") as f:
         games = yaml.safe_load(f)["games"]    
 
-    game_id, game_display = get_game_info(games, args.game_name)
+    game_id, game_display, min_views = get_game_info(games, args.game_name)
 
     working_folder = get_working_folder(args.game_name)
     if working_folder:
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         single_turn.initiate_chat(
             clip_scraper,
             is_termination_msg=lambda msg: "TERMINATE" in msg["content"],
-            message=f"Let's collect some clips for {game_display.upper()} (game id: {game_id}, work_dir: {working_folder}).",
+            message=f"Let's collect some clips for {game_display.upper()} (game id: {game_id}, work_dir: {working_folder}, min_views: {min_views}).",
             max_turns=2
         )
 
