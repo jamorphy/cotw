@@ -12,6 +12,8 @@ from summarize import summarize
 from util import get_working_folder, generate_unique_id, get_game_info
 from agents import clip_scraper, clip_summarizer
 
+from send_discord_message import send_message
+
 load_dotenv()
 
 available_functions = {
@@ -48,7 +50,9 @@ if __name__ == "__main__":
     with open("metadata.yaml", "r") as f:
         games = yaml.safe_load(f)["games"]    
 
-    game_id, game_display, min_views = get_game_info(games, args.game_name)
+    game_id, game_display, min_views, discord_channel_id = get_game_info(games, args.game_name)
+
+    send_message(f'Scraping clips for: {args.game_name}', discord_channel_id)
 
     working_folder = get_working_folder(args.game_name)
     if working_folder:
@@ -77,5 +81,7 @@ if __name__ == "__main__":
             message=f"Let's summarize the clips. The working directory is {working_folder}",
             max_turns=2
         )
+
+        send_message('Done.', discord_channel_id)
     else:
         print(f"Game '{args.game_name}' not found in the categories.")

@@ -13,6 +13,8 @@ import json
 from util import get_working_folder, get_game_info
 from agents import content, metrics, orchestrator
 
+from send_discord_message import send_message
+
 def get_clip_scores(message):
     relevant_content = message['content'].split("TERMINATE")[0].strip()
 
@@ -81,7 +83,9 @@ if __name__ == "__main__":
     with open("metadata.yaml", "r") as f:
         games = yaml.safe_load(f)["games"] 
 
-    game_id, game_display, _ = get_game_info(games, args.game_name)
+    game_id, game_display, _, discord_channel_id = get_game_info(games, args.game_name)
+
+    send_message(f'Analyzing clips for: {args.game_name}', discord_channel_id)
 
     working_folder = get_working_folder(args.game_name)
     if working_folder:
@@ -115,7 +119,7 @@ if __name__ == "__main__":
             updated_clips.append(clip)
             num_analyzed += 1
         
-    print(f'Finished analyzing {num_analyzed} clips.')
+    send_message(f'Finished analyzing {num_analyzed} clips.', discord_channel_id)
 
     final_clips = analyzed_clips + updated_clips
 

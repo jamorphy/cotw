@@ -4,12 +4,10 @@ import asyncio
 import os
 from dotenv import load_dotenv
 
-def send_video_complete_message(file_path):
-    channel_id = 1283223113429024808
-    message = f"Finished compiling video at: `{file_path}`"
-    
+# game specific channels
+def send_message(message, channel_id):
+    #channel_id = 1283223113429024808    
     asyncio.run(send_discord_message(channel_id,  message))
-
 
 async def send_discord_message(channel_id, message):
     client = discord.Client(intents=discord.Intents.default())

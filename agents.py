@@ -72,9 +72,10 @@ editor_config = {
                 "type": "object",
                 "properties": {
                     "work_dir": {"type": "string", "description": "The working directory where all clips and metadata is saved."},
+                    "discord_channel_id": {"type": "string", "description": "ID of the discord channel to send messages in."},
                 }                
             },                    
-            "required": ["work_dir"],
+            "required": ["work_dir", "discord_channel_id"],
         }
     ]
 }

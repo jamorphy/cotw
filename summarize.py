@@ -29,15 +29,13 @@ def summarize(work_dir):
     
     updated_clips = []
     for clip in newer_clips:
-        # TODO: Uncomment
-        #transcription = transcribe_audio(oai_client, clip['audio_path'])
-        clip['transcription'] = "This is a dummy transcription."
-        frames = ["frame1", "frame2", "frame3"]
-        #frames = extract_frames(clip['video_path'])
+        transcription = transcribe_audio(oai_client, clip['audio_path'])
+        clip['transcription'] = transcription
+        frames = extract_frames(clip['video_path'])
 
         if clip['transcription'] and frames:
-            #summary = get_summary(anthropic_client, transcription, frames)
-            clip['summary'] = "This is a testing summary, give this clip a 5/10."
+            summary = get_summary(anthropic_client, transcription, frames)
+            clip['summary'] = summary
 
         updated_clips.append(clip)
 
@@ -48,7 +46,7 @@ def summarize(work_dir):
 
     return f"Finished summarizing {len(updated_clips)} clips."
 
-def extract_frames(file_path, num_frames=8, compression_quality=40):
+def extract_frames(file_path, num_frames=3, compression_quality=20):
     print(f'Currently extracting frames from {file_path}')
 
     try:

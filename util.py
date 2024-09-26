@@ -15,7 +15,7 @@ def get_working_folder(game_name):
 def get_game_info(metadata, game_name):
     game_info = metadata.get(game_name)
     if game_info:
-        return game_info["id"], game_info["display"], game_info["min_views"]
+        return game_info["id"], game_info["display"], game_info["min_views"], game_info["discord_channel_id"]
     else:
             print(f'Game \'{game_name}\' does not exist in metadata.yaml')
             exit(1)
@@ -23,7 +23,7 @@ def get_game_info(metadata, game_name):
 def get_editor_info(metadata, game_name):
     game_info = metadata.get(game_name)
     if game_info:
-        return game_info["min_views"], game_info["min_runtime"]
+        return game_info["min_views"], game_info["min_runtime"], game_info["discord_channel_id"]
     else:
             print(f'Game \'{game_name}\' does not exist in metadata.yaml')
             exit(1)
