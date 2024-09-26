@@ -60,3 +60,7 @@ games:
     display: "Team Fortress 2"
     min_views: 100
     min_runtime: 300
+  halo_infinite:
+    id: "506416"
+    display: "Halo Infinite"
+    min_views: 75
