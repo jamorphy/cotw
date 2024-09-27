@@ -1,10 +1,10 @@
-ffmpeg_path: "/opt/homebrew/bin/ffmpeg"
+ffmpeg_path: "/usr/bin/ffmpeg"
 games:
   fortnite:
     id: "33214"
     display: "Fortnite"
-    min_views: 100
-    min_runtime: 60
+    min_views: 200
+    min_runtime: 350
     discord_channel_id: 1288967243656462380
   minecraft:
     id: "27471"
@@ -73,3 +73,9 @@ games:
     min_views: 75
     min_runtime: 300
     discord_channel_id: 1288966857801470022
+  rl:
+    id: "30921"
+    display: "Rocket League"
+    min_views: 150
+    min_runtime: 300
+    discord_channel_id: 1289263116416450642
