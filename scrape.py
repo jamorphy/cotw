@@ -52,8 +52,6 @@ if __name__ == "__main__":
 
     game_id, game_display, min_views, discord_channel_id = get_game_info(games, args.game_name)
 
-    send_message(f'Scraping clips for: {args.game_name}', discord_channel_id)
-
     working_folder = get_working_folder(args.game_name)
     if working_folder:
         print(f'Active folder exists: {working_folder}')
@@ -69,6 +67,7 @@ if __name__ == "__main__":
             print(f"An error occurred while creating the folder: {e}")
 
     if game_id and game_display:
+        send_message(f'Scraping clips for: `{args.game_name}`', discord_channel_id)
         single_turn.initiate_chat(
             clip_scraper,
             is_termination_msg=lambda msg: "TERMINATE" in msg["content"],
@@ -76,14 +75,10 @@ if __name__ == "__main__":
             max_turns=2
         )
 
-        send_message('Starting summary.', discord_channel_id)
-
         single_turn.initiate_chat(
             clip_summarizer,
             message=f"Let's summarize the clips. The working directory is {working_folder}",
             max_turns=2
         )
-
-        send_message('done', discord_channel_id)
     else:
         print(f"Game '{args.game_name}' not found in the categories.")

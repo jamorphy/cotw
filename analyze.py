@@ -105,7 +105,7 @@ if __name__ == "__main__":
         clip for clip in metadata if not clip['is_analyzed']
     ]
 
-    send_message(f'Analyzing {len(clips_to_analyze)} clips for: {args.game_name}', discord_channel_id)
+    send_message(f'Analyzing {len(clips_to_analyze)} clips for: `{args.game_name}`', discord_channel_id)
 
     updated_clips = []
     num_analyzed = 0
@@ -123,5 +123,3 @@ if __name__ == "__main__":
 
     with open(metadata_file, 'w') as f:
         json.dump(final_clips, f, indent=2)
-
-    send_message(f'Finished analyzing {num_analyzed} clips.', discord_channel_id)

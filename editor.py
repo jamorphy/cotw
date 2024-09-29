@@ -67,8 +67,7 @@ def compile_video(work_dir, discord_channel_id):
     for clip in final_clips:
         clip.close()
     
-    send_message(f"Finished compiling video at: `{output_path}`", int(discord_channel_id))
-    
+    send_message(f"Compiled video: `{output_path}`", int(discord_channel_id))
     print(f"Compilation complete!")
     return output_path
 
