@@ -19,7 +19,7 @@ games:
     id: "516575"
     display: "VALORANT"
     min_views: 1500
-    min_runtime: 600
+    min_runtime: 250
     discord_channel_id: 1288967183312879777
   cs2:
     id: "32399"
