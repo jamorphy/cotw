@@ -78,3 +78,9 @@ games:
     min_views: 150
     min_runtime: 300
     discord_channel_id: 1289263116416450642
+  overwatch:
+    id: "515025"
+    display: "Overwatch 2"
+    min_views: 400
+    min_runtime: 450
+    discord_channel_id: 1289775675028406304
