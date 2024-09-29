@@ -51,7 +51,6 @@ def get_top_clips(game_id, work_dir, min_views, limit=20):
         print(f"Error {response.status_code} fetching from Twitch API: {response.text}")
         return None
 
-# TODO: View count from metadata.yml is not being passed in here
 def save_clips_metadata(work_dir, clips, min_views=1000):
     metadata_path = os.path.join(work_dir, 'clips_metadata.json')
     
@@ -62,7 +61,7 @@ def save_clips_metadata(work_dir, clips, min_views=1000):
 
     print(f"There are {len(existing_clips)} existing clips.")
     
-    filtered_clips = [clip for clip in clips if clip['view_count'] > 0]
+    filtered_clips = [clip for clip in clips if clip['view_count'] > int(min_views)]
 
     for clip in filtered_clips:
         if isinstance(clip['created_at'], datetime):
