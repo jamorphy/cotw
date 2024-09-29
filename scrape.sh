@@ -1,6 +1,8 @@
 #!/bin/bash
 
-working_folder="/Users/j/Workspace/videogen/"
+working_folder=$(yq eval '.working_folder' config.yaml)
+ffmpeg_path=$(yq eval '.ffmpeg_path' config.yaml)
+
 cd ${working_folder}
 
 VENV_PATH="$working_folder/virtualenv"
@@ -8,7 +10,7 @@ VENV_PATH="$working_folder/virtualenv"
 source virtualenv/bin/activate
 
 export PATH="$VENV_PATH/bin:$PATH"
-export PATH=$PATH:/opt/homebrew/bin/ffmpeg:/opt/homebrew/bin/ffmpeg
+export PATH=$PATH:$ffmpeg_path
 
 if [ -z "$1" ]; then
     echo "Usage: $0 <game_name>"

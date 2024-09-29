@@ -76,12 +76,14 @@ if __name__ == "__main__":
             max_turns=2
         )
 
+        send_message('Starting summary.', discord_channel_id)
+
         single_turn.initiate_chat(
             clip_summarizer,
             message=f"Let's summarize the clips. The working directory is {working_folder}",
             max_turns=2
         )
 
-        send_message('Done.', discord_channel_id)
+        send_message('done', discord_channel_id)
     else:
         print(f"Game '{args.game_name}' not found in the categories.")

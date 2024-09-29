@@ -105,7 +105,10 @@ def download_clip(work_dir, clip):
     with open('metadata.yaml', 'r') as f:
         metadata = yaml.safe_load(f)
 
-    ffmpeg_location = metadata['ffmpeg_path']
+    with open('config.yaml', 'r') as f:
+        config = yaml.safe_load(f)
+
+    ffmpeg_location = config['ffmpeg_path']
 
     video_ydl_opts = {
         'outtmpl': video_output_template,

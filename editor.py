@@ -4,8 +4,10 @@
 # Checks if a video can be created, then creates it
 import autogen
 import os
-os.environ["IMAGEIO_FFMPEG_EXE"] = "/opt/homebrew/bin/ffmpeg"
 import yaml
+with open('config.yaml', 'r') as f:
+    config = yaml.safe_load(f)
+os.environ["IMAGEIO_FFMPEG_EXE"] = config['ffmpeg_path']
 import json
 import argparse
 from util import get_working_folder, get_editor_info

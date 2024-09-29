@@ -1,10 +1,9 @@
-ffmpeg_path: "/usr/bin/ffmpeg"
 games:
   fortnite:
     id: "33214"
     display: "Fortnite"
     min_views: 200
-    min_runtime: 350
+    min_runtime: 30
     discord_channel_id: 1288967243656462380
   minecraft:
     id: "27471"
@@ -25,7 +24,7 @@ games:
   cs2:
     id: "32399"
     display: "Counter-Strike 2"
-    min_views: 0
+    min_views: 500
     min_runtime: 200
     discord_channel_id: 1288967099859075182
   deadlock:

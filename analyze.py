@@ -85,8 +85,6 @@ if __name__ == "__main__":
 
     game_id, game_display, _, discord_channel_id = get_game_info(games, args.game_name)
 
-    send_message(f'Analyzing clips for: {args.game_name}', discord_channel_id)
-
     working_folder = get_working_folder(args.game_name)
     if working_folder:
         print(f'Active folder exists: {working_folder}, starting analysis.')
@@ -107,6 +105,8 @@ if __name__ == "__main__":
         clip for clip in metadata if not clip['is_analyzed']
     ]
 
+    send_message(f'Analyzing {len(clips_to_analyze)} clips for: {args.game_name}', discord_channel_id)
+
     updated_clips = []
     num_analyzed = 0
     for clip in clips_to_analyze:        
@@ -119,11 +119,9 @@ if __name__ == "__main__":
             updated_clips.append(clip)
             num_analyzed += 1
         
-    send_message(f'Finished analyzing {num_analyzed} clips.', discord_channel_id)
-
     final_clips = analyzed_clips + updated_clips
 
     with open(metadata_file, 'w') as f:
         json.dump(final_clips, f, indent=2)
 
-    print('Done scoring all clips')
+    send_message(f'Finished analyzing {num_analyzed} clips.', discord_channel_id)
