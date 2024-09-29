@@ -20,7 +20,7 @@ def get_oauth_token():
     auth_response = requests.post(auth_url, params=auth_params)
     return auth_response.json()["access_token"]
 
-def get_top_clips(game_id, work_dir, min_views, limit=15):
+def get_top_clips(game_id, work_dir, min_views, limit=20):
     access_token = get_oauth_token()
     
     headers = {

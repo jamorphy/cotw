@@ -30,12 +30,13 @@ def summarize(work_dir):
     updated_clips = []
     for clip in newer_clips:
         transcription = transcribe_audio(oai_client, clip['audio_path'])
-        clip['transcription'] = transcription
-        frames = extract_frames(clip['video_path'])
+        clip['transcription'] = transcription or ""
+        frames = extract_frames(clip['video_path']) or []
 
+        summary = ""
         if clip['transcription'] and frames:
             summary = get_summary(anthropic_client, transcription, frames)
-            clip['summary'] = summary
+        clip['summary'] = summary or ""
 
         updated_clips.append(clip)
 

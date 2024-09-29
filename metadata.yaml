@@ -24,7 +24,7 @@ games:
   cs2:
     id: "32399"
     display: "Counter-Strike 2"
-    min_views: 500
+    min_views: 999
     min_runtime: 360
     discord_channel_id: 1288967099859075182
   deadlock:
@@ -64,7 +64,7 @@ games:
     id: "16676"
     display: "Team Fortress 2"
     min_views: 100
-    min_runtime: 360
+    min_runtime: 300
     discord_channel_id: 1288963729454530571
   halo_infinite:
     id: "506416"
@@ -87,13 +87,13 @@ games:
   siege:
     id: "460630"
     display: "Rainbow Six Siege"
-    min_views: 400
+    min_views: 700
     min_runtime: 360
     discord_channel_id: 1289836295094538240
   cod:
     id: "1337444628"
     display: "COD: MW3"
-    min_views: 400
+    min_views: 700
     min_runtime: 360
     discord_channel_id: 1289837072659779626
   tekken:

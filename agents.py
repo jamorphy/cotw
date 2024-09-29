@@ -106,6 +106,7 @@ content = autogen.AssistantAgent(
     llm_config=orchestrator_config,
     is_termination_msg=lambda msg: "TERMINATE" in msg["content"],
     human_input_mode="NEVER",
+    # TODO: Maybe make score out of 100 instead of 10
     system_message="""You are an expert in analyzing gaming content, specifically Twitch clips. Your role is to evaluate clips based on their transcription and 
                       video frame data, considering factors such as gameplay skill, entertainment value, and overall relevance. Provide detailed reasoning for 
                       your evaluations and be open to discussion with the Orchestrator and MetricsAnalyzer. Score clips on a scale of 1-10, with 10 being the highest 
