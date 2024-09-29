@@ -1,5 +1,9 @@
 #!/bin/bash
 
+export PATH=$PATH:/snap/bin/yq
+
+cd /home/j/cotw
+
 working_folder=$(yq eval '.working_folder' config.yaml)
 ffmpeg_path=$(yq eval '.ffmpeg_path' config.yaml)
 
