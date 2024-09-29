@@ -20,7 +20,7 @@ def get_oauth_token():
     auth_response = requests.post(auth_url, params=auth_params)
     return auth_response.json()["access_token"]
 
-def get_top_clips(game_id, work_dir, min_views, limit=8):
+def get_top_clips(game_id, work_dir, min_views, limit=15):
     access_token = get_oauth_token()
     
     headers = {
@@ -43,7 +43,7 @@ def get_top_clips(game_id, work_dir, min_views, limit=8):
     if response.status_code == 200:
         clips = response.json()["data"]
         # TODO: We are gathering clips from all languages for testing purposes
-        en_clips = [clip for clip in clips if clip['language'] == 'en']
+        # en_clips = [clip for clip in clips if clip['language'] == 'en']
         save_clips_metadata(work_dir, clips, min_views)
         download_all_clips(work_dir)
         return f"Retrieved {len(clips)} clips from the Twitch API."
@@ -52,7 +52,7 @@ def get_top_clips(game_id, work_dir, min_views, limit=8):
         return None
 
 # TODO: View count from metadata.yml is not being passed in here
-def save_clips_metadata(work_dir, clips, min_views=800):
+def save_clips_metadata(work_dir, clips, min_views=1000):
     metadata_path = os.path.join(work_dir, 'clips_metadata.json')
     
     existing_clips = []
