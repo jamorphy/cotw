@@ -29,7 +29,7 @@ def check_total_runtime(work_dir, target_runtime):
 
     runtime = 0
     for clips in clips_metadata:
-        if clips['scores'] > 7:
+        if clips['scores'] >= 7:
             runtime += clips['duration']
 
     return runtime
@@ -47,7 +47,7 @@ def compile_video(work_dir, discord_channel_id):
         if 'video_path' not in clip:
             continue
         
-        if clip['scores'] and clip['scores'] > 7:
+        if clip['scores'] and clip['scores'] >= 7:
             clip_path = clip['video_path']
             video = VideoFileClip(clip_path)
             video = video.resize(height=target_resolution[1])
