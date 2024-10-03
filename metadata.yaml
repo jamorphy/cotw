@@ -70,7 +70,7 @@ games:
     id: "506416"
     display: "Halo Infinite"
     min_views: 0
-    min_runtime: 360
+    min_runtime: 200 
     discord_channel_id: 1288966857801470022
   rl:
     id: "30921"
