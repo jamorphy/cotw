@@ -46,7 +46,7 @@ analysis_config = {
 }
 
 orchestrator_config = {
-    "config_list": [{"model": "claude-3-5-sonnet-20240620", "api_key": os.environ["ANTHROPIC_API_KEY"], "api_type": "anthropic"},
+    "config_list": [{"model": "claude-3-sonnet-20240229", "api_key": os.environ["ANTHROPIC_API_KEY"], "api_type": "anthropic"},
                     {"model": "claude-3-opus-20240229", "api_key": os.environ["ANTHROPIC_API_KEY"], "api_type": "anthropic"}]
 }
 
