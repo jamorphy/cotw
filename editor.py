@@ -29,8 +29,9 @@ def check_total_runtime(work_dir, target_runtime):
 
     runtime = 0
     for clips in clips_metadata:
-        if clips['scores'] >= 7:
-            runtime += clips['duration']
+        if clips['scores'] != None:
+            if clips['scores'] > 7:
+                runtime += clips['duration']
 
     return runtime
 
@@ -47,13 +48,14 @@ def compile_video(work_dir, discord_channel_id):
         if 'video_path' not in clip:
             continue
         
-        if clip['scores'] and clip['scores'] >= 7:
-            clip_path = clip['video_path']
-            video = VideoFileClip(clip_path)
-            video = video.resize(height=target_resolution[1])
-            video = video.crop(x_center=video.w/2, y_center=video.h/2,
-                            width=target_resolution[0], height=target_resolution[1])
-            final_clips.append(video)
+        if clip['scores'] != None:
+            if clip['scores'] > 7:
+                clip_path = clip['video_path']
+                video = VideoFileClip(clip_path)
+                video = video.resize(height=target_resolution[1])
+                video = video.crop(x_center=video.w/2, y_center=video.h/2,
+                                width=target_resolution[0], height=target_resolution[1])
+                final_clips.append(video)
 
     print("Concatenating clips...")
     compiled_video = concatenate_videoclips(final_clips)

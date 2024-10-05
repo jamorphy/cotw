@@ -3,108 +3,108 @@ games:
     id: "33214"
     display: "Fortnite"
     min_views: 200
-    min_runtime: 360
+    min_runtime: 210 
     discord_channel_id: 1288967243656462380
   minecraft:
     id: "27471"
     display: "Minecraft"
     min_views: 200
-    min_runtime: 360
+    min_runtime: 210
   league_of_legends:
     id: "21779"
     display: "League of Legends"
     min_views: 200
-    min_runtime: 360
+    min_runtime: 210
   valorant:
     id: "516575"
     display: "VALORANT"
-    min_views: 200
-    min_runtime: 360
+    min_views: 300
+    min_runtime: 210
     discord_channel_id: 1288967183312879777
   cs2:
     id: "32399"
     display: "Counter-Strike 2"
     min_views: 300
-    min_runtime: 360
+    min_runtime: 210
     discord_channel_id: 1288967099859075182
   deadlock:
     id: "2132205352"
     display: "Deadlock"
     min_views: 200
-    min_runtime: 360
+    min_runtime: 210
     discord_channel_id: 1288967049036697682
   gtav:
     id: "32982"
     display: "Grand Theft Auto V"
     min_views: 400
-    min_runtime: 360   
+    min_runtime: 210   
     discord_channel_id: 1288966983995494461 
   black_myth_wukong:
     id: "519291"
     display: "Black Myth Wukong"
     min_views: 200
-    min_runtime: 360    
+    min_runtime: 210    
   dota2:
     id: "29595"
     display: "Dota 2"
     min_views: 200
-    min_runtime: 360    
+    min_runtime: 210    
   warzone:
     id: "512710"
     display: "Call of Duty: Warzone"
     min_views: 300
-    min_runtime: 360
+    min_runtime: 210
     discord_channel_id: 1288966927506604042
   elden_ring:
     id: "512953"
     display: "Elden Ring"
     min_views: 200
-    min_runtime: 360
+    min_runtime: 210
   tf2:
     id: "16676"
     display: "Team Fortress 2"
     min_views: 100
-    min_runtime: 300
+    min_runtime: 210
     discord_channel_id: 1288963729454530571
   halo_infinite:
     id: "506416"
     display: "Halo Infinite"
     min_views: 100
-    min_runtime: 200 
+    min_runtime: 210 
     discord_channel_id: 1288966857801470022
   rl:
     id: "30921"
     display: "Rocket League"
     min_views: 100
-    min_runtime: 360
+    min_runtime: 210
     discord_channel_id: 1289263116416450642
   overwatch:
     id: "515025"
     display: "Overwatch 2"
     min_views: 150
-    min_runtime: 360
+    min_runtime: 210
     discord_channel_id: 1289775675028406304
   siege:
     id: "460630"
     display: "Rainbow Six Siege"
-    min_views: 0
-    min_runtime: 360
+    min_views: 100
+    min_runtime: 210
     discord_channel_id: 1289836295094538240
   cod:
     id: "1337444628"
     display: "COD: MW3"
     min_views: 300
-    min_runtime: 360
+    min_runtime: 210
     discord_channel_id: 1289837072659779626
   tekken:
     id: "538054672"
     display: "Tekken 8"
     min_views: 200
-    min_runtime: 360
+    min_runtime: 210
     discord_channel_id: 1289837310216765451
   apex:
     id: "511224"
     display: "Apex Legends"
     min_views: 200
-    min_runtime: 360
+    min_runtime: 210
     discord_channel_id: 1289837566471962625

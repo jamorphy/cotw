@@ -144,6 +144,8 @@ orchestrator = autogen.AssistantAgent(
                       for each clip, but be prepared to make a final decision if agreement isn't reached after 5 discussion turns. Consider factors such as viewer engagement, 
                       gameplay skill, and entertainment value when evaluating clips. Assume that another agent has analyzed frames from the clip and has written a detailed summary, so there's no need to process the visual
                       frames again.
+
+                      If you are unable to obtain a final score, then default to 0.
                       
                       When agreement has been reached, you must output the following:
                       final_score: <insert final score whole number score here, no fraction>
