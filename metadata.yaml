@@ -18,7 +18,7 @@ games:
   valorant:
     id: "516575"
     display: "VALORANT"
-    min_views: 300
+    min_views: 200
     min_runtime: 360
     discord_channel_id: 1288967183312879777
   cs2:

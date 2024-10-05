@@ -20,7 +20,7 @@ def get_oauth_token():
     auth_response = requests.post(auth_url, params=auth_params)
     return auth_response.json()["access_token"]
 
-def get_top_clips(game_id, work_dir, min_views, limit=20):
+def get_top_clips(game_id, work_dir, min_views, limit=10):
     access_token = get_oauth_token()
     
     headers = {
@@ -28,13 +28,13 @@ def get_top_clips(game_id, work_dir, min_views, limit=20):
         "Authorization": f"Bearer {access_token}"
     }
     
-    one_day_ago = (datetime.now() - timedelta(days=1)).isoformat() + "Z"
+    three_days_ago = (datetime.now() - timedelta(days=3)).isoformat() + "Z"
     
     clips_url = "https://api.twitch.tv/helix/clips"
     params = {
         "game_id": game_id,
         "first": limit,
-        "started_at": one_day_ago,
+        "started_at": three_days_ago,
         "language": "en",
     }
     
@@ -51,7 +51,7 @@ def get_top_clips(game_id, work_dir, min_views, limit=20):
         print(f"Error {response.status_code} fetching from Twitch API: {response.text}")
         return None
 
-def save_clips_metadata(work_dir, clips, min_views=1000):
+def save_clips_metadata(work_dir, clips, min_views=0):
     metadata_path = os.path.join(work_dir, 'clips_metadata.json')
     
     existing_clips = []
